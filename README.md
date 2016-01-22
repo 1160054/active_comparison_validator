@@ -1,13 +1,11 @@
 # ActiveComparisonValidator
 
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
 Dynamically add validation for compare the column and the other column.
 
 This gem provides a macro for comparing the column and the other column of the record.
 Type of the comparable column is Date Time Numeric, and all that jazz.
+
+## Installation
 
 ```ruby
 gem 'active_comparison_validator'
