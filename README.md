@@ -2,6 +2,13 @@
 
 Dynamically add validation for compare the column and the other column.
 
+```rb
+class Shop < ActiveRecord::Base
+  include ActiveComparisonValidator
+  comparison_validator 'open_at < close_at'
+end
+```
+
 This gem provides a macro for comparing the column and the other column of the record.
 Type of the comparable column is Date Time Numeric, and all that jazz.
 
