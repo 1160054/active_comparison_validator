@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-require "active_comparison_validator/version.rb"
+require 'active_comparison_validator/version.rb'
+require 'active_record'
 require 'active_support/concern'
+require 'active_support/core_ext/object/with_options'
+require 'active_support/core_ext/array/access'
+require 'i18n'
 
 module ActiveComparisonValidator
   extend ActiveSupport::Concern
-
   module ClassMethods
     # Verified: that A is greater than B.
     # @param [String] field_a_<_field_b This string is field_name, operator_name and field_name
@@ -41,21 +44,23 @@ module ActiveComparisonValidator
         locals = {
           :<  => [:greater_than,             :less_than,                :count],
           :<= => [:greater_than_or_equal_to, :less_than_or_equal_to,    :count],
-          :<  => [:less_than,                :greater_than,             :count],
-          :<= => [:less_than_or_equal_to,    :greater_than_or_equal_to, :count],
+          :>  => [:less_than,                :greater_than,             :count],
+          :>= => [:less_than_or_equal_to,    :greater_than_or_equal_to, :count],
           :== => [:confirmation,             :confirmation,             :attribute],
-          :!= => [:other_than,               :other_than,               :attribute],
+          :!= => [:other_than,               :other_than,               :attribute]
         }
+        return unless locals.key?(operator)
         return if a_value.send(operator, to_value)
         a_value_human = { locals[operator].last => self.class.human_attribute_name(a_attr) }
         b_value_human = { locals[operator].last => self.class.human_attribute_name(b_attr) }
+
         I18n.with_options scope: 'errors.messages' do |locale|
           errors.add(b_attr, locale.t(locals[operator].first,  a_value_human))
           errors.add(a_attr, locale.t(locals[operator].second, b_value_human))
         end
       end
-      config = %{validate :#{method_name}}
-      self.class_eval(config)
+      config = %(validate :#{method_name})
+      class_eval(config)
     end
   end
 end
